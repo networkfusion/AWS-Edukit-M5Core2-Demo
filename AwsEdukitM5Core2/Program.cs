@@ -18,14 +18,17 @@ using AwsEdukitM5Core2;
 using AwsEdukitM5Core2.VaisalaHmp1xx;
 
 const bool HARDWARE_DEBUG_MODE = false;
-const bool USE_NETWORKING = false; // After a firmware update, we need to set this to true, otherwise we will not have a good(ish) RTC datetime.
+
+const bool USE_NETWORKING_WIFI = false; // After a firmware update, we need to set this to true, otherwise we will not have a good(ish) RTC datetime.
+const bool USE_NETWORKING_ANY = false;
+
 
 M5Core2.InitializeScreen();
 Menu.CurrentDisplayContext = DisplayContext.Startup;
 
 Thread.Sleep(5_000); // Helps with debug!
 Debug.WriteLine("Hello from M5Core2!");
-if (USE_NETWORKING)
+if (USE_NETWORKING_WIFI)
 {
     Debug.WriteLine($"Waiting for WiFi...{WiFi.Ssid}");
     Console.WriteLine("Waiting for WiFi...");
@@ -173,7 +176,7 @@ void AddStaticDisplayVariables_MainDisplay()
 
     if (Menu.CurrentDisplayContext == DisplayContext.SystemConfiguration || Menu.CurrentDisplayContext == DisplayContext.DeviceTelemetry)
     {
-        if (USE_NETWORKING)
+        if (USE_NETWORKING_ANY)
         {
             Debug.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");
             Console.WriteLine($"IP = {System.Net.NetworkInformation.IPGlobalProperties.GetIPAddress()}");

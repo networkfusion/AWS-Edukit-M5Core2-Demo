@@ -28,6 +28,7 @@ certain styles of attack.
 * https://github.com/m5stack/Core2-for-AWS-IoT-EduKit/tree/master/Factory-Firmware/components/esp-cryptoauthlib/esp_cryptoauth_utility
 * https://github.com/MicrochipTech/cryptoauthlib
 * https://github.com/ccrisan/pyatecc/blob/main/pyatecc/atecc.py
+* https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/core/ATECC608A-TNGTLS-CryptoAuthentication-Data-Sheet-DS40002112B.pdf
 
 ## Usage
 

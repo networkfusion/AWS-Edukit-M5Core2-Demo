@@ -8,6 +8,13 @@ using UnitsNet;
 
 namespace AwsEdukitM5Core2.VaisalaHmp1xx
 {
+    enum DeviceType
+    {
+        HMP155,
+        HMP110,
+        HMP60
+    }
+
     enum SerialMode
     {
         Stop,
@@ -22,6 +29,7 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
         Default,
         Laske6,
         Laske7,
+        CustomCommas,
         Custom, // when form is not the default expected.
     }
 
@@ -128,7 +136,7 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
             _sensor.Open();
             Debug.WriteLine("HMP1xx serial port opened!");
 
-
+            // TODO: timeout
             DebugHelper.DumpHashTable(GetDeviceInformation(), 1);
             GetDeviceErrors();
 
