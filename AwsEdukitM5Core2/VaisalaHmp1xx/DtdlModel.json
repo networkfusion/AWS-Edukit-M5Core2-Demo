@@ -1,0 +1,39 @@
+﻿// https://github.com/Azure/opendigitaltwins-dtdl/blob/master/DTDL/v4/DTDL.v4.md
+{
+  "@context": "dtmi:dtdl:context;4",
+  "@id": "dtmi:vaisala:sensor:VaisalaHmp1xx;1",
+  "@type": "Interface",
+  "displayName": "Vaisala HMP1xx",
+  "contents": [
+    {
+      "@type": "Telemetry",
+      "name": "humidity",
+      "schema": "double"
+    },
+    {
+      "@type": "Telemetry",
+      "name": "probeTemperature",
+      "schema": "double"
+    },
+    {
+      "@type": "Telemetry",
+      "name": "frostPointTemperature",
+      "schema": "double"
+    },
+    {
+      "@type": "Telemetry",
+      "name": "dewPointTemperature",
+      "schema": "double"
+    },
+    {
+      "@type": "Telemetry",
+      "name": "mixingRatio",
+      "schema": "double"
+    },
+    {
+      "@type": "Telemetry",
+      "name": "wetBulbTemperature",
+      "schema": "double"
+    }
+  ]
+}

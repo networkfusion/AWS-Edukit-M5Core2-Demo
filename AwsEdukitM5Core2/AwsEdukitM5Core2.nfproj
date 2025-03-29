@@ -156,6 +156,9 @@
       <HintPath>packages\UnitsNet.nanoFramework.Temperature.5.73.0\lib\UnitsNet.Temperature.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="VaisalaHmp1xx\DtdlModel.json" />
+  </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets')" />
   <ProjectExtensions>
     <ProjectCapabilities>
