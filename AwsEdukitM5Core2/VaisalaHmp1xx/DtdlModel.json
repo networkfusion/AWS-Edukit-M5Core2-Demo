@@ -12,7 +12,7 @@
     },
     {
       "@type": "Telemetry",
-      "name": "probeTemperature",
+      "name": "temperature",
       "schema": "double"
     },
     {
