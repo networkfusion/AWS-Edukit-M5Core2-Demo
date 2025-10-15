@@ -18,7 +18,7 @@ namespace AwsEdukitM5Core2
     {
         public static DisplayContext CurrentDisplayContext { get; set; } = DisplayContext.Startup;
 
-        public static string HeaderText = "   VAISALA HMP155 | {THE ASSET ID}  ";
+        public static string HeaderText = "   VAISALA HMP110 | {THE ASSET ID}  ";
         public static string FooterText = " [Telemetry][SensorInfo][SystemInfo]";
 
 

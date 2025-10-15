@@ -23,7 +23,8 @@
     <Compile Include="Menu.cs" />
     <Compile Include="VaisalaHmp1xx\DeviceInformation.cs" />
     <Compile Include="VaisalaHmp1xx\DeviceTelemetry.cs" />
-    <Compile Include="VaisalaHmp1xx\VaisalaHmp1xx.cs" />
+    <Compile Include="VaisalaHmp1xx\VaisalaHmp1xx_modbus.cs" />
+    <Compile Include="VaisalaHmp1xx\VaisalaHmp1xx_serial.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Secrets.cs" />
@@ -52,6 +53,9 @@
     </Reference>
     <Reference Include="Iot.Device.Ft6xx6x">
       <HintPath>packages\nanoFramework.Iot.Device.Ft6xx6x.1.2.863\lib\Iot.Device.Ft6xx6x.dll</HintPath>
+    </Reference>
+    <Reference Include="Iot.Device.Modbus">
+      <HintPath>packages\nanoFramework.Iot.Device.Modbus.1.0.560\lib\Iot.Device.Modbus.dll</HintPath>
     </Reference>
     <Reference Include="Iot.Device.Mpu6886">
       <HintPath>packages\nanoFramework.Iot.Device.Mpu6886.1.2.907\lib\Iot.Device.Mpu6886.dll</HintPath>

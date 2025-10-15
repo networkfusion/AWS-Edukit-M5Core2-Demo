@@ -6,11 +6,10 @@ using System.IO.Ports;
 using System.Threading;
 using UnitsNet;
 
-namespace AwsEdukitM5Core2.VaisalaHmp1xx
+namespace VaisalaHmp1xx
 {
     enum DeviceType
     {
-        HMP155,
         HMP110,
         HMP60
     }
@@ -43,7 +42,7 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
     ///  Base class for common functions of the Vaisala HMP1xx sensors.
     /// </summary>
     [Interface("Vaisala HMP1xx temperature and humidity sensor")]
-    public class VaisalaHmp1xx : IDisposable
+    public class VaisalaHmp1xx_serial : IDisposable
     {
         // TODO: should be an abstract class
         private readonly SerialPort _sensor;
@@ -114,14 +113,14 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
         //public const string ERR_CHECKSUM_CAL = "Calibration certificate check sum failure";
 
 
-        public VaisalaHmp1xx(string port)
+        public VaisalaHmp1xx_serial(string port)
         {
             _sensor = new SerialPort(port)
             {
-                BaudRate = 4800,
-                DataBits = 7,
-                Parity = Parity.Even,
-                StopBits = StopBits.One,
+                BaudRate = 19200,
+                DataBits = 8,
+                Parity = Parity.None,
+                StopBits = StopBits.Two,
                 Handshake = Handshake.None,
                 NewLine = "\r\n", // this sensor needs to use CRLF for writes, but needs some CR encorragement sometimes.
                 ReadBufferSize = 4096 // Input buffer needs to be large enough to handle the biggest response.
@@ -137,7 +136,7 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
             Debug.WriteLine("HMP1xx serial port opened!");
 
             // TODO: timeout
-            DebugHelper.DumpHashTable(GetDeviceInformation(), 1);
+            //DebugHelper.DumpHashTable(GetDeviceInformation(), 1);
             GetDeviceErrors();
 
             _sensor.DataReceived += Port_DataReceived;
@@ -227,8 +226,8 @@ namespace AwsEdukitM5Core2.VaisalaHmp1xx
                 var firstline = _sensor.ReadLine();  // Get the returned device info string
                 Debug.WriteLine(firstline);
                 if (firstline.Contains(" "))
-                    {
-                        var firstfield = firstline.Split(' ');
+                {
+                    var firstfield = firstline.Split(' ');
                     if (firstfield.Length == 2)
                     {
                         infoFields.Add("Model", firstfield[0]);
