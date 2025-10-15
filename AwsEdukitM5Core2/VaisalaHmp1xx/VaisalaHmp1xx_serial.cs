@@ -46,12 +46,14 @@ namespace VaisalaHmp1xx
     {
         // TODO: should be an abstract class
         private readonly SerialPort _sensor;
+        private static double _temperature;
         private static double _humidity;
-        private static readonly double _temperature;
-        private static double _probeTemperature;
+        private static double _dewPointTemperature;
+
+
         // Derived parameters
+        private static double _probeTemperature;
         private static readonly double _frostPointTemperature;
-        private static readonly double _dewPointTemperature;
         private static readonly double _mixingRatio;
         private static readonly double _wetbulbTemperature;
 
@@ -443,22 +445,24 @@ namespace VaisalaHmp1xx
 
         private static void DecodeAutoMessage(string message, AutoTelemetryFormat expectedMessageFormmatting = AutoTelemetryFormat.Default)
         {
-            //TODO: better handle message formats as defined with sending the `FORM`. For the HMP110, it will likely use 'T' rather than 'Ta'
+            //TODO: For the HMP110, it will likely use 'T' rather than 'Ta'
             //Debug.WriteLine(message);
 
             if (expectedMessageFormmatting == AutoTelemetryFormat.Default)
             {
-                if (message.StartsWith("RH=") && message.Contains("%RH Ta=") && message.TrimEnd(' ').EndsWith("'C"))
+                
+                if (message.StartsWith("T=") && message.Contains("%RH Td=") && message.TrimEnd(' ').EndsWith("'C"))
                 {
-                    // starts with "RH=" and ends with "%RH", strip those chars, then convert to a double?!
-                    var humidity = message.Substring(3, 6).Trim(' '); // Temporary "workaround?!
-                                                                      // starts with "Ta=" and ends with "'C", strip those chars, then convert to a double?!
-                    var probeTemperature = message.Substring(16, 6).Trim(' '); // Temporary "workaround?!
-                                                                               //Debug.WriteLine($"RH:{humidity}, T:{temperature}");
+                    //Example message: "T=  16.16 'C RH=  61.74 %RH Td=   8.82 'C"
+                    var temperature = message.Substring(3, 6).Trim(' '); // Temporary "workaround?!
+                    var humidity = message.Substring(16, 6).Trim(' '); // Temporary "workaround?!
+                    var dewPointTemperature = message.Substring(32, 6).Trim(' '); // Temporary "workaround?!
+                    //Debug.WriteLine($"T:{temperature}, RH:{humidity}, TD: {dewPointTemperature}");
                     try
                     {
+                        _temperature = double.Parse(temperature);
                         _humidity = double.Parse(humidity);
-                        _probeTemperature = double.Parse(probeTemperature);
+                        _dewPointTemperature = double.Parse(dewPointTemperature);
                     }
                     catch (Exception ex)
                     {

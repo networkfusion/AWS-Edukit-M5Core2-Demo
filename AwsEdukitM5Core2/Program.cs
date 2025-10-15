@@ -193,13 +193,14 @@ void AddStaticDisplayVariables_MainDisplay()
 
     if (Menu.CurrentDisplayContext == DisplayContext.DeviceTelemetry)
     {
+        
+        Console.WriteLine($"HMP-T = {Hmp1xx.GetTemperature().DegreesCelsius.ToString("f4")}*C"); // this sensor does not have an external probe
         Console.WriteLine($"HMP-RH = {Hmp1xx.GetRelativeHumidity().Percent.ToString("f2")}%");
-        Console.WriteLine($"HMP-Ta = {Hmp1xx.GetProbeTemperature().DegreesCelsius.ToString("f4")}*C");
-        //Console.WriteLine($"HMP-T = {Hmp110.GetTemperature().DegreesCelsius.ToString("f4")}*C"); // TODO: this sensor does not have a probe
+        Console.WriteLine($"HMP-TD = {Hmp1xx.GetDewPointTemperature().DegreesCelsius.ToString("f2")}*C");
         // TODO: the following parameters must be read, rather than auto sent:
+        //Console.WriteLine($"HMP-Ta = {Hmp1xx.GetProbeTemperature().DegreesCelsius.ToString("f4")}*C");
         //Console.WriteLine($"HMP-TW = {Hmp1xx.GetWetBulbTemperature().DegreesCelsius.ToString("f2")}*C");
         //Console.WriteLine($"HMP-TDF = {Hmp1xx.GetFrostPointTemperature().DegreesCelsius.ToString("f2")}*C");
-        //Console.WriteLine($"HMP-TD = {Hmp1xx.GetDewPointTemperature().DegreesCelsius.ToString("f2")}*C");
         //Console.WriteLine($"HMP-X = {Hmp1xx.GetMixingRatio().ToString("f2")}.g/kg");
         Console.WriteLine("");
     }
