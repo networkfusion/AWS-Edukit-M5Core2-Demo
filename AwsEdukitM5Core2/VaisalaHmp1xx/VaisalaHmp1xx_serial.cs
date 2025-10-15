@@ -46,16 +46,16 @@ namespace VaisalaHmp1xx
     {
         // TODO: should be an abstract class
         private readonly SerialPort _sensor;
-        private static double _temperature;
-        private static double _humidity;
-        private static double _dewPointTemperature;
+        private static double _temperature = double.NaN;
+        private static double _humidity = double.NaN;
+        private static double _dewPointTemperature = double.NaN;
 
 
         // Derived parameters
-        private static double _probeTemperature;
-        private static readonly double _frostPointTemperature;
-        private static readonly double _mixingRatio;
-        private static readonly double _wetbulbTemperature;
+        private static double _probeTemperature = double.NaN;
+        private static double _frostPointTemperature = double.NaN;
+        private static double _mixingRatio = double.NaN;
+        private static double _wetbulbTemperature = double.NaN;
 
         // The following formatting was the default one I retrived from my sensor. I am not sure if it is the actual default!
         //private const string defaultAutoTelemtryFormat = "3.1 \"RH=\" RH \" \" U4 3.1 \"Ta=\" Ta \" \" U3 \\r \\n";
@@ -137,9 +137,10 @@ namespace VaisalaHmp1xx
             _sensor.Open();
             Debug.WriteLine("HMP1xx serial port opened!");
 
-            // TODO: timeout
+            // TODO: not sure if this is applicable for the HMP110?!
             //DebugHelper.DumpHashTable(GetDeviceInformation(), 1);
-            GetDeviceErrors();
+            //GetDeviceErrors();
+            //GetDeviceInformation();
 
             _sensor.DataReceived += Port_DataReceived;
         }
