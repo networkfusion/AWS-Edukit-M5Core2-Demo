@@ -8,7 +8,10 @@
 
 using AwsEdukitM5Core2;
 using AwsEdukitM5Core2.VaisalaHmp1xx;
+using Iot.Device.Modbus.Client;
+using Microsoft.Extensions.Logging;
 using nanoFramework.Hardware.Esp32;
+using nanoFramework.Logging.Debug;
 using nanoFramework.M5Core2;
 using nanoFramework.M5Stack;
 using nanoFramework.Networking;
@@ -79,6 +82,10 @@ Menu.CurrentDisplayContext = DisplayContext.SystemConfiguration;
 // pins 13 (RXD1 - GPIO3) / 14 (TXD1 - GPIO1)
 // SerialPort COM2
 var Hmp1xx = new VaisalaHmp1xx.VaisalaHmp1xx_serial("COM2");
+
+//var Hmp1xx = new VaisalaHmp1xx.VaisalaHmp1xx_modbus("COM2");
+
+
 
 //M5Core2.TouchEvent += TouchEventCallback;
 
@@ -173,7 +180,7 @@ void AddStaticDisplayVariables_MainDisplay()
     Menu.DrawHeader();
     Console.WriteLine("");
 
-    Debug.WriteLine($"RTC = {DateTime.UtcNow}");
+    Debug.WriteLine($"RTC = {DateTime.UtcNow.ToString("o")}");
     Console.WriteLine($"RTC = {DateTime.UtcNow.ToString("o")}");
     Console.WriteLine("");
 

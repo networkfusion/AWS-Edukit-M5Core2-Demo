@@ -1,4 +1,6 @@
 ﻿using Iot.Device.Modbus.Client;
+using Microsoft.Extensions.Logging;
+using nanoFramework.Logging.Debug;
 using System;
 using System.Collections;
 using System.Device.Model;
@@ -16,14 +18,13 @@ namespace VaisalaHmp1xx
     {
         // TODO: should be an abstract class
         private readonly ModbusClient _sensor;
-        private static double _humidity;
-        private static double _temperature;
-        private static double _probeTemperature;
-        // Derived parameters
-        private static double _frostPointTemperature;
-        private static double _dewPointTemperature;
-        private static double _mixingRatio;
-        private static double _wetbulbTemperature;
+        private static double _humidity = double.NaN;
+        private static double _temperature = double.NaN;
+        private static double _dewPointTemperature = double.NaN;
+        private static double _absoluteHumidity = double.NaN;
+        private static double _mixingRatio = double.NaN;
+        private static double _wetbulbTemperature = double.NaN;
+        private static double _enthalpy = double.NaN;
 
 
         public VaisalaHmp1xx_modbus(string port)
@@ -34,6 +35,10 @@ namespace VaisalaHmp1xx
                 WriteTimeout = 5000
             };
 
+            var logger = new DebugLogger("ModbusClient") { MinLogLevel = LogLevel.Debug };
+            _sensor.Logger = logger;
+
+
         }
 
         public void Open()
@@ -43,7 +48,9 @@ namespace VaisalaHmp1xx
             //_sensor.Open();
             // Debug.WriteLine("HMP1xx serial port opened!");
             Thread.Sleep(5000); // Give the sensor a second to settle.
-            ReadAllRegisters();
+            // FIXME: Understand https://docs.vaisala.com/r/M211060EN-N/en-US/GUID-899F92B4-583C-404B-A4BA-0D47330C6573/GUID-E824E3DB-16EE-4BB4-80A0-57E39B595A65
+
+            ReadFloatingPointValueRegisters();
         }
 
         public void Close()
@@ -53,6 +60,11 @@ namespace VaisalaHmp1xx
             //    _sensor.Close();
             //}
             //_sensor.DataReceived -= Port_DataReceived;
+        }
+
+        public void GetValues()
+        {
+            ReadFloatingPointValueRegisters();
         }
 
 
@@ -65,35 +77,47 @@ namespace VaisalaHmp1xx
 
         }
 
-        /// <summary>
-        /// Retrive the device information.
-        /// </summary>
-        public Hashtable GetDeviceInformation()
-        {
+        ///// <summary>
+        ///// Retrive the device information.
+        ///// </summary>
+        //public Hashtable GetDeviceInformation()
+        //{
 
-            Hashtable infoFields = new(); // TODO : use DeviceInformation class
-            Debug.WriteLine("Attempting to get sensor info!");
-            return infoFields;
-        }
+        //    Hashtable infoFields = new(); // TODO : use DeviceInformation class
+        //    Debug.WriteLine("Attempting to get sensor info!");
 
-        private float ConvertToFloat(ushort high, ushort low)
-        {
-            byte[] bytes = new byte[4];
-            bytes[0] = (byte)(low & 0xFF);
-            bytes[1] = (byte)(low >> 8);
-            bytes[2] = (byte)(high & 0xFF);
-            bytes[3] = (byte)(high >> 8);
-            return BitConverter.ToSingle(bytes, 0);
-        }
+        //    Debug.WriteLine("Attempting to read device information registers!");
+        //    // Read the device information registers in one go.
+        //    ushort startAddress = 0; // TODO: check this value
+        //    ushort numRegisters = 6; // TODO: check this value
+        //    //ushort serialNumberRegister = 128;
+        //    //ushort calibrationDateRegister = 129;
+        //    //ushort calibrationTextRegister = 130;
+        //    short[] registers = _sensor.ReadInputRegisters(0xF0, startAddress, numRegisters);
+        //    Debug.WriteLine($"Read {registers.Length} registers from sensor.");
 
-        public void ReadAllRegisters()
+        //    return infoFields;
+        //}
+
+        //private float ConvertToFloat(ushort high, ushort low)
+        //{
+        //    byte[] bytes = new byte[4];
+        //    bytes[0] = (byte)(low & 0xFF);
+        //    bytes[1] = (byte)(low >> 8);
+        //    bytes[2] = (byte)(high & 0xFF);
+        //    bytes[3] = (byte)(high >> 8);
+        //    return BitConverter.ToSingle(bytes, 0);
+        //}
+
+
+        public void ReadFloatingPointValueRegisters()
         {
             Debug.WriteLine("Attempting to read all modbus registers!");
             // Read all the registers in one go.
-            ushort startAddress = 1; // TODO: check this value 0 or 1?
-            ushort numRegisters = 2; // TODO: check this value 26 or 27?
-            short[] inputRegistersRead = _sensor.ReadInputRegisters(0xF0, startAddress, numRegisters);
-            //Debug.WriteLine($"Read {registers.Length} registers from sensor.");
+            ushort startAddress = 0; // TODO: check this value 0 or 1?
+            ushort numRegisters = 26; // TODO: check this value 26 or 27?
+            short[] inputRegistersRead = _sensor.ReadHoldingRegisters(0xF0, startAddress, numRegisters);
+            Debug.WriteLine($"Read {inputRegistersRead.Length} registers from sensor.");
             //// Parse the registers
             //_humidity = ConvertToFloat((ushort)registers[0], (ushort)registers[1]); // Humidity in %
             //_temperature = ConvertToFloat((ushort)registers[2], (ushort)registers[3]); // Temperature in °C
@@ -140,31 +164,6 @@ namespace VaisalaHmp1xx
             return Temperature.FromDegreesCelsius(_temperature);
         }
 
-        /// <summary>
-        /// Gets the last probe temperature reading from the sensor.
-        /// </summary>
-        /// <remarks>
-        /// Received every 1-2 seconds.
-        /// </remarks>
-        /// <returns>Temperature reading.</returns>
-        [Telemetry("ProbeTemperature")]
-        public Temperature GetProbeTemperature()
-        {
-            return Temperature.FromDegreesCelsius(_probeTemperature);
-        }
-
-        /// <summary>
-        /// Gets the last derived frost point temperature reading from the sensor.
-        /// </summary>
-        /// <remarks>
-        /// Received every 1-2 seconds.
-        /// </remarks>
-        /// <returns>Temperature reading.</returns>
-        [Telemetry("FrostPointTemperature")]
-        public Temperature GetFrostPointTemperature()
-        {
-            return Temperature.FromDegreesCelsius(_frostPointTemperature);
-        }
 
         /// <summary>
         /// Gets the last derived dew point temperature reading from the sensor.
@@ -177,6 +176,20 @@ namespace VaisalaHmp1xx
         public Temperature GetDewPointTemperature()
         {
             return Temperature.FromDegreesCelsius(_dewPointTemperature);
+        }
+
+
+        /// <summary>
+        /// Gets the last absolute humidity reading from the sensor.
+        /// </summary>
+        /// <remarks>
+        /// Received every 1-2 seconds.
+        /// </remarks>
+        /// <returns>Absolute Humiditity reading (g/m3).</returns>
+        [Telemetry("AbsoluteHumidity")]
+        public MassConcentration GetAbsoluteHumidity()
+        {
+            return MassConcentration.FromGramsPerCubicMeter(_absoluteHumidity); //FIXME: this is a a strange unit (g/m3)
         }
 
 
@@ -206,6 +219,13 @@ namespace VaisalaHmp1xx
             return Temperature.FromDegreesCelsius(_wetbulbTemperature);
         }
 
+
+        // FIXME: not implemented yet!
+        //[Telemetry("Enthalpy")]
+        //public Energy GetEnthalpy()
+        //{
+        //    return (_enthalpy); //FIXME: this is a a strange unit (kJ/kg)
+        //}
 
 
         /// <inheritdoc cref="IDisposable" />
